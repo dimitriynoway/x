@@ -35,13 +35,13 @@ const socketOn = (io) => async (socket) => {
 
 				if (muttedUserIndex != -1) {
 
-					if (mute) {
-						users[muttedUserIndex].socket.decoded.mutted = true
-					}
-
-					if (!mute) {
-						users[muttedUserIndex].socket.decoded.mutted = false
-					}
+					// if (mute) {
+					users[muttedUserIndex].socket.decoded.mutted = mute
+					// }
+					// 
+					// if (!mute) {
+					// users[muttedUserIndex].socket.decoded.mutted = false
+					// }
 
 				}
 
@@ -76,7 +76,12 @@ const socketOn = (io) => async (socket) => {
 				return socket.emit('delay', time)
 			}
 
-			const res = await messageModel.createMessage(msg, socket.decoded.id, socket.decoded.username, socket.userColor)
+			try {
+				const res = await messageModel.createMessage(msg, socket.decoded.id, socket.decoded.username, socket.userColor)
+			} catch (e) {
+
+			}
+
 			io.emit('message', {
 				message: res.message,
 				userColor: socket.userColor,

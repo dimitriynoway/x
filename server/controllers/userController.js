@@ -4,7 +4,9 @@ import userModel from '../models/user.model'
 const login = async (req, res) => {
 	try {
 		const { username, email, password } = req.body
+
 		loginValidation(username, email, password);
+
 		let user = await userModel.findUserByEmail(email)
 
 		if (user && !user.banned) {
@@ -14,7 +16,9 @@ const login = async (req, res) => {
 			return res.send({ token })
 		}
 
-		userModel.bannedNotification(user.banned)
+		if (user && user.banned) {
+			userModel.bannedNotification(user.banned)
+		}
 
 		user = await userModel.createUser(email, password, username)
 		const token = await userModel.createToken(user)

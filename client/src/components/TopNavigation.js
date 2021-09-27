@@ -11,6 +11,7 @@ import List from '@mui/material/List';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { LeftNavOnlineUser } from './LeftNavOnlineUser';
+import { REACT_APP_SERVER } from '../config';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -36,7 +37,7 @@ export const TopNavigation = ({
 		localStorage.removeItem('token');
 		history.push('/');
 		socket.disconnect(true);
-		await axios.get('http://localhost:4000/auth/logout', { withCredentials: 'include' });
+		await axios.get(`${REACT_APP_SERVER}/auth/logout`, { withCredentials: 'include' });
 	};
 
 	const toggleDrawer = (open) => (event) => {

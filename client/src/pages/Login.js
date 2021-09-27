@@ -13,6 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
 import { ErrorHandler } from '../notifications/functions';
+import { REACT_APP_SERVER } from '../config';
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
@@ -85,7 +86,7 @@ const Login = () => {
 		e.preventDefault();
 		const data = { email, username, password };
 
-		axios.post('http://localhost:4000/user/login', data)
+		axios.post(`${REACT_APP_SERVER}/user/login`, data)
 			.then((res) => {
 				if (res.data?.token) {
 					localStorage.setItem('token', res.data.token);
@@ -101,7 +102,7 @@ const Login = () => {
 
 	const loginGoogle = async (e) => {
 		e.preventDefault();
-		window.open('http://localhost:4000/google', '_self');
+		window.open(`${REACT_APP_SERVER}/google`, '_self');
 	};
 
 	return (
