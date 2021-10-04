@@ -1,4 +1,4 @@
-import User from "../model/User";
+import User from '../model/User'
 
 export default async () => {
 	const countOfUsers = await User.find().count();

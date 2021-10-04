@@ -1,4 +1,4 @@
-export default (username, email, password) => {
+export default (username: string, email: string, password: string) => {
 
 	if (!email || !password || !username) {
 		throw new Error("All fields should be filled")

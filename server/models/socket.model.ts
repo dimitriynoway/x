@@ -3,8 +3,9 @@ import User from "../model/User"
 import users from "../users"
 import fetchUsers from '../functions/fetchUsers'
 import checkDelay from "../functions/checkDelay"
+import { Socket } from "socket.io";
 
-const setCurrentUserStatus = async (id, socket) => {
+const setCurrentUserStatus = async (id: string, socket: Socket) => {
 	const user = await User.findById(id)
 
 	if (!user) {
@@ -16,18 +17,20 @@ const setCurrentUserStatus = async (id, socket) => {
 		throw new Error('You are banned')
 	}
 
-	socket.userColor = Math.floor(Math.random() * 5);
-	socket.decoded = {
+	//socket.data.userColor = Math.floor(Math.random() * 5);
+	socket.data = {
 		username: user.username,
 		id: user.id,
 		role: user.role,
 		banned: user.banned,
-		mutted: user.mutted
+		mutted: user.mutted,
+		userColor: Math.floor(Math.random() * 5)
 	}
+
 }
 
-const checkDoubleConnection = (socket) => {
-	const cloneIndex = users.findIndex(({ client }) => client.id == socket.decoded.id)
+const checkDoubleConnection = (socket: Socket) => {
+	const cloneIndex = users.findIndex(({ client }) => client.id == socket.data.id)
 
 	if (cloneIndex != -1) {
 		users[cloneIndex].socket.disconnect(true);
@@ -35,14 +38,14 @@ const checkDoubleConnection = (socket) => {
 	}
 
 	const params = {
-		id: socket.decoded.id,
-		userColor: socket.userColor,
-		username: socket.decoded.username
+		id: socket.data.id,
+		userColor: socket.data.userColor,
+		username: socket.data.username
 	}
 	users.push({ client: params, socket: socket })
 }
 
-const banUser = async (bool, id) => {
+const banUser = async (bool: boolean, id: string) => {
 	const user = await User.findByIdAndUpdate(id, { banned: bool }, { new: true })
 	if (user) {
 		return user
@@ -50,12 +53,12 @@ const banUser = async (bool, id) => {
 	throw new Error("Error: can't ban the user")
 }
 
-const getUsers = async (role) => {
+const getUsers = async (role: string[]) => {
 	const users = await fetchUsers()
 	return users
 }
 
-const muteUser = async (bool, id) => {
+const muteUser = async (bool: boolean, id: string) => {
 	const user = await User.findByIdAndUpdate(id, { mutted: bool }, { new: true })
 	if (user) {
 		return user
@@ -63,12 +66,14 @@ const muteUser = async (bool, id) => {
 	throw new Error("Error: can't mute the user")
 }
 
-const isUserMutted = async (id) => {
+const isUserMutted = async (id: string) => {
 	const user = await User.findById(id)
-	return user.mutted
+	if (user) {
+		return user.mutted
+	}
 }
 
-const checkMessageDelay = async (id) => {
+const checkMessageDelay = async (id: string) => {
 	const lastMessage = await Message.findOne({ userId: id }).sort({ createdAt: -1 })
 	if (lastMessage) {
 		return checkDelay(lastMessage.createdAt)

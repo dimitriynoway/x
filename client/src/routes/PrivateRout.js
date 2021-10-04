@@ -13,6 +13,7 @@ const PrivateRoute = ({ children, isAuthenticated, ...rest }) => {
 			history.push('/');
 			setLoader(false);
 		} else {
+			console.log('we are gere');
 			setValid(true);
 			setLoader(false);
 		}

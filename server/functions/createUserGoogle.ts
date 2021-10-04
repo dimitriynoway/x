@@ -1,6 +1,7 @@
-const User = require('../model/User')
+import User from '../model/User'
+import { Profile } from 'passport-google-oauth20'
 
-export default async (profile) => {
+export default async (profile: Profile) => {
 	const countOfUsers = await User.find().count()
 	const role = countOfUsers ? ['user'] : ['admin', 'user']
 	const newUser = new User({

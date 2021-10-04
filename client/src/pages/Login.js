@@ -89,6 +89,7 @@ const Login = () => {
 		axios.post(`${REACT_APP_SERVER}/user/login`, data)
 			.then((res) => {
 				if (res.data?.token) {
+					console.log(res.data);
 					localStorage.setItem('token', res.data.token);
 					history.push('/chat');
 				}

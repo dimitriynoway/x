@@ -1,7 +1,9 @@
+import { Request, Response } from "express";
 import loginValidation from "../functions/loginValidation"
+import IUser from "../interfaces/User";
 import userModel from '../models/user.model'
 
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
 	try {
 		const { username, email, password } = req.body
 
@@ -20,11 +22,13 @@ const login = async (req, res) => {
 			userModel.bannedNotification(user.banned)
 		}
 
-		user = await userModel.createUser(email, password, username)
-		const token = await userModel.createToken(user)
+		const createdUser = await userModel.createUser(email, password, username)
+		const token = await userModel.createToken(createdUser)
 		return res.send({ token })
 	} catch (err) {
-		res.status(400).send({ error: err.message })
+		if (err instanceof Error) {
+			res.status(400).send({ error: err.message })
+		}
 	}
 }
 export default {

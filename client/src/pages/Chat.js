@@ -79,6 +79,10 @@ const Chat = ({ socket }) => {
 
 		setOnlineUsersArray([...newOnline, client]);
 	};
+	useEffect(() => {
+		console.log('hello');
+		console.log('token', localStorage.getItem('token'));
+	});
 
 	useEffect(() => {
 		socket.on('getUserFromBan', getUserFromBan);
@@ -138,7 +142,8 @@ const Chat = ({ socket }) => {
 		});
 
 		socket.on('dissconnect type', ({ type }) => {
-			localStorage.removeItem('token');
+			// localStorage.removeItem('token');
+			console.log('discont type');
 			if (type === 'banned') {
 				setWarningMessage('Loooser... You have been banned!');
 				setWarningColor('orange');
@@ -147,12 +152,14 @@ const Chat = ({ socket }) => {
 		socket.on('error', (err) => {
 			setWarningMessage(err.message);
 			setWarning(true);
-			localStorage.removeItem('token');
+			console.log('error', err);
+			// localStorage.removeItem('token');
 		});
 		socket.on('connect_error', (err) => {
 			setWarningMessage(err.message);
 			setWarning(true);
-			localStorage.removeItem('token');
+			console.log('connect error');
+			// localStorage.removeItem('token');
 		});
 		socket.on('disconnect', () => {
 			setWarning(true);
