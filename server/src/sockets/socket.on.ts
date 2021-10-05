@@ -4,10 +4,8 @@ import users from '../users';
 import { Socket } from 'socket.io';
 
 const socketOn = (io: any) => async (socket: Socket) => {
-	console.log('socket: ', socket)
 	try {
 		const messages = await messageModel.getMessages()
-		console.log('eh')
 		if (socket.data.role.includes('admin')) {
 			socket.emit('admin')
 			const allUsers = await socketModel.getUsers(socket.data.role)

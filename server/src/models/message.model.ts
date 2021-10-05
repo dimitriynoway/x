@@ -19,7 +19,6 @@ const createMessage = async (msg: string, id: string, username: string, color: n
 		...message
 	})
 	const res = await newMessage.save()
-	console.log(res)
 	// if (res) {
 	return res
 	// }
@@ -28,7 +27,6 @@ const createMessage = async (msg: string, id: string, username: string, color: n
 
 const getMessages = async (): Promise<IMessage[]> => {
 	const messages = await Message.find().sort({ createdAt: 1 }).limit(20)
-	console.log(messages)
 	return messages
 }
 

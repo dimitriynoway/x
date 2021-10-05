@@ -17,10 +17,7 @@ const socketUse = (socket: Socket, next: Next) => {
 			);
 			//decoded = {id, username, role}
 			//take from db actual data and check if user is banned
-			console.log(1)
 			const decodedId = decoded.id
-			console.log(2)
-			console.log(decodedId)
 
 			socketModel.setCurrentUserStatus(decodedId, socket).then(() => {
 				socketModel.checkDoubleConnection(socket)
@@ -33,7 +30,6 @@ const socketUse = (socket: Socket, next: Next) => {
 		}
 	} catch (error) {
 		//disconnect without message or go to socket.on but with message
-		console.log('we are here')
 		if (error instanceof Error) {
 			next(new Error(error.message));
 		}
