@@ -2,10 +2,9 @@ import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import createUserGoogle from '../functions/createUserGoogle'
 import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20'
-import User from '../model/User'
-
 import { Express } from 'express'
-
+import { getRepository } from 'typeorm'
+import { User } from '../entity/User'
 interface SuperUser extends Express.User {
 	email: string
 }
@@ -17,7 +16,8 @@ passport.use(new Strategy({
 },
 	async function (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) {
 		try {
-			const user = await User.findOne({ email: profile._json.email })
+			const userRepo = getRepository(User)
+			const user = await userRepo.findOne({ email: profile._json.email })
 
 			if (!user) {
 				const createdUser = await createUserGoogle(profile)
@@ -42,14 +42,15 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser<SuperUser>(async (us, done) => {
 	try {
 		const email = us.email;
-		const user = await User.findOne({ email })
+		const userRepo = getRepository(User)
+		const user = await userRepo.findOne({ email })
 
 		if (!user) {
 			return done(null, user)
 		}
 
 		const token = jwt.sign({
-			id: user._id,
+			id: user.id,
 			username: user.username,
 			role: user.role
 		}, process.env.SECRET_KEY as string)

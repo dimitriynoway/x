@@ -1,10 +1,12 @@
-import User from '../model/User'
+import { getRepository } from 'typeorm'
 import { Profile } from 'passport-google-oauth20'
+import { User } from '../entity/User'
 
 export default async (profile: Profile) => {
-	const countOfUsers = await User.find().count()
-	const role = countOfUsers ? ['user'] : ['admin', 'user']
-	const newUser = new User({
+	const userRepo = getRepository(User)
+	const countOfUsers = await userRepo.count()
+	const role = countOfUsers > 0 ? 'user' : 'admin'
+	const newUser = userRepo.save({
 		role,
 		password: '',
 		email: profile._json.email,
@@ -12,6 +14,5 @@ export default async (profile: Profile) => {
 		mutted: false,
 		banned: false
 	})
-	const createdUser = await newUser.save()
-	return createdUser
+	return newUser
 }

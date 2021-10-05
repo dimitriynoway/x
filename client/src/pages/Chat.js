@@ -34,7 +34,7 @@ const Chat = ({ socket }) => {
 		console.log('userFromBan', user);
 		console.log('dbusers', usersInDB);
 		const updatedUsersInDB = usersInDB.map((item) => {
-			if (item.id === user._id) {
+			if (item.id === user.id) {
 				return { ...item, banned: user.banned };
 			}
 			return item;
@@ -46,7 +46,7 @@ const Chat = ({ socket }) => {
 		console.log('userFromMute', user);
 		console.log('dbusers', usersInDB);
 		const updatedUsersInDB = usersInDB.map((item) => {
-			if (item.id === user._id) {
+			if (item.id === user.id) {
 				return { ...item, mutted: user.mutted };
 			}
 			return item;
@@ -111,6 +111,7 @@ const Chat = ({ socket }) => {
 
 	useEffect(() => {
 		socket.once('admin', () => {
+			console.log('you are admin');
 			setUserRole('admin');
 		});
 		socket.once('getUsersFromServer', (users) => {

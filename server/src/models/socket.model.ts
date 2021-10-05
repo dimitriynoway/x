@@ -1,35 +1,37 @@
-import Message from "../model/Message";
-import User from "../model/User"
 import users from "../users"
 import fetchUsers from '../functions/fetchUsers'
 import checkDelay from "../functions/checkDelay"
 import { Socket } from "socket.io";
+import { getRepository } from "typeorm";
+import { User } from '../entity/User'
+import { Message } from '../entity/Message'
 
-const setCurrentUserStatus = async (id: string, socket: Socket) => {
-	const user = await User.findById(id)
+const setCurrentUserStatus = async (id: number, socket: Socket) => {
 
-	if (!user) {
+	const userRepo = getRepository(User)
+	const findedUser = await userRepo.findOne({ where: { id: id } })
+
+	if (!findedUser) {
 		throw new Error("User not found")
 	}
 
-	if (user.banned) {
+	if (findedUser.banned) {
 		//socket.disconnect(true)
 		throw new Error('You are banned')
 	}
 
-	//socket.data.userColor = Math.floor(Math.random() * 5);
 	socket.data = {
-		username: user.username,
-		id: user.id,
-		role: user.role,
-		banned: user.banned,
-		mutted: user.mutted,
+		username: findedUser.username,
+		id: findedUser.id,
+		role: findedUser.role,
+		banned: findedUser.banned,
+		mutted: findedUser.mutted,
 		userColor: Math.floor(Math.random() * 5)
 	}
-
 }
 
 const checkDoubleConnection = (socket: Socket) => {
+
 	const cloneIndex = users.findIndex(({ client }) => client.id == socket.data.id)
 
 	if (cloneIndex != -1) {
@@ -37,7 +39,11 @@ const checkDoubleConnection = (socket: Socket) => {
 		users.splice(cloneIndex, 1)
 	}
 
-	const params = {
+	const params: {
+		id: number,
+		userColor: number,
+		username: string
+	} = {
 		id: socket.data.id,
 		userColor: socket.data.userColor,
 		username: socket.data.username
@@ -45,39 +51,60 @@ const checkDoubleConnection = (socket: Socket) => {
 	users.push({ client: params, socket: socket })
 }
 
-const banUser = async (bool: boolean, id: string) => {
-	const user = await User.findByIdAndUpdate(id, { banned: bool }, { new: true })
+const banUser = async (bool: boolean, id: number) => {
+
+	const userRepo = getRepository(User)
+	const findedUser = await userRepo.findOne({ id });
+	const user = await userRepo.save({
+		id: findedUser.id,
+		...findedUser,
+		banned: bool
+	})
+
 	if (user) {
 		return user
 	}
+
 	throw new Error("Error: can't ban the user")
 }
 
-const getUsers = async (role: string[]) => {
-	const users = await fetchUsers()
+const getUsers = () => {
+	const users = fetchUsers()
 	return users
 }
 
-const muteUser = async (bool: boolean, id: string) => {
-	const user = await User.findByIdAndUpdate(id, { mutted: bool }, { new: true })
-	if (user) {
-		return user
+const muteUser = async (bool: boolean, id: number) => {
+
+	const userRepo = getRepository(User)
+	const user = await userRepo.findOne({ id })
+	const updatedUser = userRepo.save({
+		id: user.id,
+		...user,
+		mutted: bool
+	})
+
+	if (updatedUser) {
+		return updatedUser
 	}
+
 	throw new Error("Error: can't mute the user")
 }
 
-const isUserMutted = async (id: string) => {
-	const user = await User.findById(id)
-	if (user) {
-		return user.mutted
-	}
-}
 
 const checkMessageDelay = async (id: string) => {
-	const lastMessage = await Message.findOne({ userId: id }).sort({ createdAt: -1 })
+
+	const MessageRepo = getRepository(Message)
+	const lastMessage = await MessageRepo.findOne({
+		where: { user: { id } },
+		order: {
+			id: 'DESC'
+		}
+	})
+
 	if (lastMessage) {
 		return checkDelay(lastMessage.createdAt)
 	}
+
 	return 0
 }
 
@@ -87,6 +114,5 @@ export default {
 	banUser,
 	getUsers,
 	muteUser,
-	isUserMutted,
 	checkMessageDelay
 }

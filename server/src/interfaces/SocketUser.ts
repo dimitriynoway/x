@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 
 export default interface IClientSocket {
 	client: {
-		id: string,
+		id: number,
 		userColor: number,
 		username: string
 	},

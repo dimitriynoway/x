@@ -1,6 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import socketModel from '../models/socket.model'
-import { NextFunction } from 'express'
 import { Socket } from 'socket.io';
 import { ExtendedError } from 'socket.io/dist/namespace';
 
@@ -18,18 +17,19 @@ const socketUse = (socket: Socket, next: Next) => {
 			//decoded = {id, username, role}
 			//take from db actual data and check if user is banned
 			const decodedId = decoded.id
-
 			socketModel.setCurrentUserStatus(decodedId, socket).then(() => {
 				socketModel.checkDoubleConnection(socket)
+
 				return next();
 			}).catch((err) => {
+
 				if (err instanceof Error) {
 					next(new Error(err.message));
 				}
+
 			})
 		}
 	} catch (error) {
-		//disconnect without message or go to socket.on but with message
 		if (error instanceof Error) {
 			next(new Error(error.message));
 		}

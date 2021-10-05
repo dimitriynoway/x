@@ -1,32 +1,32 @@
 const colors = ["#e85d04", "#b5e48c", "#507DBC", "#D6CFC7", "#877F7D"];
-import mongoose from "mongoose";
-import IMessage from "../interfaces/Message";
-import Message from "../model/Message"
+import { getRepository } from "typeorm";
+import { Message as Messagesql } from "../entity/Message"
 
+const createMessage = (msg: string, id: number, username: string, color: number) => {
 
-const createMessage = async (msg: string, id: string, username: string, color: number): Promise<IMessage> => {
 	const bgColor = colors[color];
+	const today = new Date().toString()
 	const message = {
 		message: msg,
-		userId: id,
-		createdAt: Date.now(),
+		user: { id: id },
+		createdAt: today,
 		bgColor: bgColor || 'white',
 		type: 'user',
 		username
 	}
-	const newMessage = new Message({
-		_id: new mongoose.Types.ObjectId(),
+	const messageRepo = getRepository(Messagesql)
+	const res = messageRepo.save({
 		...message
 	})
-	const res = await newMessage.save()
-	// if (res) {
+
 	return res
-	// }
-	// throw new Error('Error with creating message')
 }
 
-const getMessages = async (): Promise<IMessage[]> => {
-	const messages = await Message.find().sort({ createdAt: 1 }).limit(20)
+const getMessages = () => {
+
+	const messageRepo = getRepository(Messagesql)
+	const messages = messageRepo.find()
+
 	return messages
 }
 

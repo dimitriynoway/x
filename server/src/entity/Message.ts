@@ -4,11 +4,11 @@ import { User } from "./User";
 @Entity({ name: "messages" })
 export class Message extends BaseEntity {
 
-	@PrimaryGeneratedColumn("uuid")
+	@PrimaryGeneratedColumn()
 	id: number;
 
 	@Column()
-	createdAt: Date
+	createdAt: string
 
 	@Column({ length: 200 })
 	message: string
