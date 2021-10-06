@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Loader() {
+const Loader: React.FC = () => {
 	const classes = useStyles();
 
 	return (
@@ -20,3 +20,4 @@ export default function Loader() {
 		</div>
 	);
 }
+export default Loader

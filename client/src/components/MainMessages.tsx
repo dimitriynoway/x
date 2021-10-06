@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Box } from '@material-ui/core';
 import { NotMessage } from './NotificationMessage';
-import Message from './Message';
+import MessageComponent from './Message';
+import Message from '../interfaces/Message';
 
 const useStyles = makeStyles((theme) => ({
 	box: {
@@ -17,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export const MainMessages = ({ messages }) => {
-	const ref = useRef(null);
+const MainMessages: React.FC<{ messages: Message[] }> = ({ messages }) => {
+	const ref = useRef<null | HTMLDivElement>(null);
 	const classes = useStyles();
 
 	const scrollToBottom = () => {
@@ -44,7 +45,7 @@ export const MainMessages = ({ messages }) => {
 					if (message.type === 'notification') {
 						return <NotMessage key={index} message={message} />;
 					}
-					return <Message message={message} key={index} />;
+					return <MessageComponent message={message} key={index} />;
 				})}
 				<div ref={ref} />
 			</Box>
@@ -52,3 +53,5 @@ export const MainMessages = ({ messages }) => {
 		</Grid>
 	);
 };
+
+export default MainMessages

@@ -10,9 +10,8 @@ import {
 import axios from 'axios';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
-import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router-dom';
-import { ErrorHandler } from '../notifications/functions';
+import useCustomSnackbar from '../notifications/customSnackBar';
 import { REACT_APP_SERVER } from '../config';
 
 const useStyles = makeStyles((theme) => ({
@@ -79,8 +78,7 @@ const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
-	const { enqueueSnackbar } = useSnackbar();
-	const handleError = ErrorHandler(enqueueSnackbar);
+	const SnackError = useCustomSnackbar().error
 
 	const loginHandler = async (e) => {
 		e.preventDefault();
@@ -96,7 +94,7 @@ const Login = () => {
 			})
 			.catch((err) => {
 				if (err?.response?.data?.error) {
-					handleError(err.response.data.error);
+					SnackError(err.response.data.error);
 				}
 			});
 	};

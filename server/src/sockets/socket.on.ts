@@ -53,7 +53,9 @@ const socketOn = (io: any) => async (socket: Socket) => {
 			client: {
 				id: socket.data.id,
 				userColor: socket.data.userColor,
-				username: socket.data.username
+				username: socket.data.username,
+				banned: socket.data.banned,
+				mutted: socket.data.mutted
 			},
 		})
 
@@ -83,7 +85,7 @@ const socketOn = (io: any) => async (socket: Socket) => {
 				message: res.message,
 				userColor: socket.data.userColor,
 				username: socket.data.username,
-				message_id: res.id
+				messageId: res.id
 			})
 		});
 

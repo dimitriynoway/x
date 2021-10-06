@@ -1,88 +1,92 @@
-import React, { useEffect, useState } from 'react';
-import { useSnackbar } from 'notistack';
+import React, { useEffect, useState, useCallback } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useHistory } from 'react-router-dom';
 import colors from '../colors';
-import { ErrorHandler } from '../notifications/functions';
+import useCustomSnackbar from '../notifications/customSnackBar';
 import { WarningPage } from '../components/Warning';
 import { ChatWindow } from '../components/ChatWindow';
+import Socket from '../interfaces/Socket';
+import DBUser from '../interfaces/DBUser';
+import Message from '../interfaces/Message';
+import OnlineUser from '../interfaces/OnlineUser';
+import SendMessage from '../interfaces/SendMessage';
 
-const Chat = ({ socket }) => {
+interface Props {
+	socket: Socket
+}
+
+const Chat: React.FC<Props> = ({ socket }) => {
 	const history = useHistory();
-	const { enqueueSnackbar } = useSnackbar();
+	const SnackError = useCustomSnackbar().error
 	const windowWidthLess900 = useMediaQuery('(max-width:960px)');
-	const handleError = ErrorHandler(enqueueSnackbar);
 
-	const [messages, setMessages] = useState([]);
-	const [usersInDB, setUsersInDB] = useState([]);
-	const [onlineUsersArray, setOnlineUsersArray] = useState([]);
+	const [messages, setMessages] = useState<Message[]>([]);
+	const [usersInDB, setUsersInDB] = useState<DBUser[]>([]);
+	const [onlineUsersArray, setOnlineUsersArray] = useState<OnlineUser[]>([]);
 	const [showAdmin, setShowAdmin] = useState(false);
 	const [warning, setWarning] = useState(false);
 	const [userRole, setUserRole] = useState('user');
 	const [warningMessage, setWarningMessage] = useState('You entered from two windows or connection was interrupted');
 	const [warningColor, setWarningColor] = useState('');
 
-	const sendMessage = (e, msg, setMessage) => {
-		if (e.key === 'Enter' || e.type === 'click') {
-			if (!msg) return;
-			socket.emit('message', ({ msg }));
-			setMessage('');
+	const sendMessage: SendMessage = (e, msg) => {
+		if (e.type === 'click') {
+			if (msg) {
+				socket.emit('message', ({ msg }));
+				return true
+			}
+			return false
 		}
 	};
 
 	const getUserFromBan = (user) => {
-		console.log('userFromBan', user);
-		console.log('dbusers', usersInDB);
 		const updatedUsersInDB = usersInDB.map((item) => {
 			if (item.id === user.id) {
 				return { ...item, banned: user.banned };
 			}
 			return item;
 		});
+		console.log('setUsersInDb:', updatedUsersInDB);
 		setUsersInDB([...updatedUsersInDB]);
 	};
 
 	const getUserFromMute = (user) => {
-		console.log('userFromMute', user);
-		console.log('dbusers', usersInDB);
 		const updatedUsersInDB = usersInDB.map((item) => {
 			if (item.id === user.id) {
 				return { ...item, mutted: user.mutted };
 			}
 			return item;
 		});
+		console.log('setUsersInDb2:', updatedUsersInDB);
 		setUsersInDB([...updatedUsersInDB]);
 	};
 
 	const userDisconnect = ({ disconnectedUser }) => {
-		console.log('user disconnected');
 		const copy = onlineUsersArray.find((item) => item.id === disconnectedUser.id);
 		if (copy) {
 			const newOnline = onlineUsersArray.filter((item) => item.id !== disconnectedUser.id);
 			setOnlineUsersArray([...newOnline]);
+			console.log('setonline: ', newOnline);
 		}
 	};
 	const youConnected = ({ clients, username, messages }) => {
-		console.log('you connected');
 		setWarning(false);
 		setOnlineUsersArray(clients);
+		console.log('setonline: ', clients);
+		console.log('setMessages:', messages);
 		setMessages(messages);
 	};
 	const newUserConnection = ({ client }) => {
-		console.log('new user connected', client);
-		console.log('users in db: ', usersInDB);
 		const justCreatedUser = usersInDB.find((user) => user.id === client.id);
 		if (!justCreatedUser) {
+			console.log('setUsersInDb3:', client);
 			setUsersInDB((prev) => [...prev, client]);
 		}
 		const newOnline = onlineUsersArray.filter((item) => item.id !== client.id);
 
 		setOnlineUsersArray([...newOnline, client]);
+		console.log('setonline: ', client);
 	};
-	useEffect(() => {
-		console.log('hello');
-		console.log('token', localStorage.getItem('token'));
-	});
 
 	useEffect(() => {
 		socket.on('getUserFromBan', getUserFromBan);
@@ -111,7 +115,6 @@ const Chat = ({ socket }) => {
 
 	useEffect(() => {
 		socket.once('admin', () => {
-			console.log('you are admin');
 			setUserRole('admin');
 		});
 		socket.once('getUsersFromServer', (users) => {
@@ -124,27 +127,29 @@ const Chat = ({ socket }) => {
 	}, [usersInDB, userRole]);
 
 	useEffect(() => {
-		socket.on('message', ({ message, userColor, username }) => {
+		socket.on('message', ({ message, userColor, username, messageId }) => {
+			console.log('setMessages2:', messages);
 			setMessages((prev) => [...prev, {
 				username,
 				message,
 				bgColor: colors[userColor] || 'red',
 				type: 'user',
+				createdAt: Date.now().toString(),
+				id: messageId
 			},
 			]);
 		});
 
 		socket.on('mutted', () => {
-			handleError('You are mutted', windowWidthLess900);
+			SnackError('You are mutted');
 		});
 
 		socket.on('delay', (time) => {
-			handleError(`Delay. Left ${time} seconds`, windowWidthLess900);
+			SnackError(`Delay. Left ${time} seconds`);
 		});
 
 		socket.on('dissconnect type', ({ type }) => {
 			// localStorage.removeItem('token');
-			console.log('discont type');
 			if (type === 'banned') {
 				setWarningMessage('Loooser... You have been banned!');
 				setWarningColor('orange');
@@ -153,13 +158,11 @@ const Chat = ({ socket }) => {
 		socket.on('error', (err) => {
 			setWarningMessage(err.message);
 			setWarning(true);
-			console.log('error', err);
 			// localStorage.removeItem('token');
 		});
 		socket.on('connect_error', (err) => {
 			setWarningMessage(err.message);
 			setWarning(true);
-			console.log('connect error');
 			// localStorage.removeItem('token');
 		});
 		socket.on('disconnect', () => {

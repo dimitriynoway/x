@@ -2,6 +2,7 @@ import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { OnlineUser } from './OnlineUser';
+import IOnlineUser from '../interfaces/OnlineUser';
 
 const useStyles = makeStyles((theme) => ({
 	text: {
@@ -12,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export const OnlineUsers = ({ onlineUsers }) => {
+export const OnlineUsers: React.FC<{ onlineUsers: IOnlineUser[] }> = ({ onlineUsers }) => {
 	const classes = useStyles();
 	return (
 		<Grid item md={3}>

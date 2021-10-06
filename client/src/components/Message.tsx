@@ -1,8 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Avatar, Grid, Typography } from '@material-ui/core';
-import NotificationImportantIcon
-	from '@material-ui/icons/NotificationImportant';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
+import IMessage from '../interfaces/Message';
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -13,43 +13,53 @@ const useStyles = makeStyles((theme) => ({
 		paddingTop: theme.spacing(1.5),
 		paddingBottom: theme.spacing(1.5),
 		borderRadius: 10,
-		height: theme.spacing(10),
-		justifyContent: 'center',
 		width: '100%',
 	},
 	avatar: {
 		margin: theme.spacing(1),
+		marginLeft: theme.spacing(2),
 		padding: theme.spacing(0.5),
-		backgroundColor: 'A1C6EA',
+		backgroundColor: 'white',
 	},
 	block: {
 		display: 'flex',
 	},
 	text: {
 		marginRight: theme.spacing(1),
+		marginLeft: theme.spacing(1),
 		padding: theme.spacing(1),
 		display: 'flex',
 		wordBreak: 'break-word',
 		color: 'black',
 		alignItems: 'center',
 	},
+	nickname: {
+		fontSize: 24,
+		marginLeft: theme.spacing(2),
+	},
 }));
-export const NotMessage = ({ message }) => {
+const Message: React.FC<{ message: IMessage }> = ({ message }) => {
 	const classes = useStyles();
 	return (
 		<Grid
 			item
 			className={classes.container}
-			style={{ backgroundColor: message.bgColor, opacity: 0.6 }}
+			style={{ backgroundColor: message.bgColor, opacity: 0.9 }}
 		>
 			<div className={classes.block}>
-				<Avatar className={classes.avatar}>
-					<NotificationImportantIcon />
+				<Avatar className={classes.avatar} style={{ backgroundColor: message.bgColor === 'white' ? 'black' : 'white' }}>
+					<PermIdentityIcon style={{ color: message.bgColor }} />
 				</Avatar>
-				<Typography className={classes.text}>
-					{message.message}
-				</Typography>
+				<div>
+					<Typography className={classes.nickname}>
+						{message.username}
+					</Typography>
+					<Typography className={classes.text}>
+						{message.message}
+					</Typography>
+				</div>
 			</div>
 		</Grid>
 	);
 };
+export default Message;

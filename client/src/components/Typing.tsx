@@ -2,6 +2,7 @@ import { Avatar, Grid, TextField } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
+import SendMessage from '../interfaces/SendMessage';
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const Typing = ({ sendMessage }) => {
+const Typing: React.FC<{ sendMessage: SendMessage }> = ({ sendMessage }) => {
 	const classes = useStyles();
 	const [message, setMessage] = useState('');
 
@@ -36,7 +37,7 @@ const Typing = ({ sendMessage }) => {
 					type="text"
 					id="text"
 					value={message}
-					onKeyDown={(e) => sendMessage(e, message, setMessage)}
+					// onKeyDown={(e) => sendMessage(e, message)}
 					onChange={(e) => {
 						setMessage(e.target.value);
 					}}
@@ -54,7 +55,10 @@ const Typing = ({ sendMessage }) => {
 			>
 				<Avatar
 					className={classes.avatar}
-					onClick={(e) => sendMessage(e, message, setMessage)}
+					onClick={(e) => {
+						sendMessage(e, message);
+						setMessage('')
+					}}
 				>
 					<SendIcon />
 				</Avatar>

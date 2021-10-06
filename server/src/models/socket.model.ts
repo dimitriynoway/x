@@ -42,11 +42,15 @@ const checkDoubleConnection = (socket: Socket) => {
 	const params: {
 		id: number,
 		userColor: number,
-		username: string
+		username: string,
+		banned: boolean,
+		mutted: boolean
 	} = {
 		id: socket.data.id,
 		userColor: socket.data.userColor,
-		username: socket.data.username
+		username: socket.data.username,
+		banned: socket.data.banned,
+		mutted: socket.data.mutted
 	}
 	users.push({ client: params, socket: socket })
 }

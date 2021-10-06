@@ -25,7 +25,9 @@ const createMessage = (msg: string, id: number, username: string, color: number)
 const getMessages = () => {
 
 	const messageRepo = getRepository(Messagesql)
-	const messages = messageRepo.find()
+	const messages = messageRepo.find({
+		take: 20
+	})
 
 	return messages
 }

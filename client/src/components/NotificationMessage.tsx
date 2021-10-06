@@ -1,6 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
+import { Avatar, Grid, Typography } from '@material-ui/core';
+import NotificationImportantIcon
+	from '@material-ui/icons/NotificationImportant';
+import Message from '../interfaces/Message';
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -11,9 +14,9 @@ const useStyles = makeStyles((theme) => ({
 		paddingTop: theme.spacing(1.5),
 		paddingBottom: theme.spacing(1.5),
 		borderRadius: 10,
-		marginRight: 10,
-		marginLeft: 10,
 		height: theme.spacing(10),
+		justifyContent: 'center',
+		width: '100%',
 	},
 	avatar: {
 		margin: theme.spacing(1),
@@ -32,16 +35,22 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 	},
 }));
-
-export const EmptyRightBox = () => {
+export const NotMessage: React.FC<{ message: Message }> = ({ message }) => {
 	const classes = useStyles();
 	return (
 		<Grid
 			item
-			md={3}
 			className={classes.container}
+			style={{ backgroundColor: message.bgColor, opacity: 0.6 }}
 		>
-			<div className={classes.block} />
+			<div className={classes.block}>
+				<Avatar className={classes.avatar}>
+					<NotificationImportantIcon />
+				</Avatar>
+				<Typography className={classes.text}>
+					{message.message}
+				</Typography>
+			</div>
 		</Grid>
 	);
 };

@@ -15,7 +15,7 @@ import { Google } from './Google';
 
 const SuperChat = ChatHOC(Chat);
 
-const Root = () => (
+const Root: React.FC = () => (
 	<Container
 		maxWidth="xl"
 		style={{
@@ -34,10 +34,10 @@ const Root = () => (
 				<Route path="/google">
 					<Google />
 				</Route>
-				<LoginRoute path="/login">
+				<LoginRoute path="/login" >
 					<Login />
 				</LoginRoute>
-				<PrivateRoute path="/chat">
+				<PrivateRoute path="/chat" >
 					<SuperChat />
 				</PrivateRoute>
 				<Route path="/" exect>
@@ -45,6 +45,6 @@ const Root = () => (
 				</Route>
 			</Switch>
 		</Router>
-	</Container>
+	</Container >
 );
 export default Root;

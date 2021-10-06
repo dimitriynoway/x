@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export const OnlineUser = ({ username, color }) => {
+export const OnlineUser: React.FC<{ username: string, color: number }> = ({ username, color }) => {
 	const classes = useStyles();
 
 	return (

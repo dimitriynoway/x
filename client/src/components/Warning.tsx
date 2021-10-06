@@ -14,7 +14,11 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-export const WarningPage = ({ warningMessage, warningColor, windowWidthLess900 }) => {
+export const WarningPage: React.FC<{
+	warningMessage: string,
+	warningColor: string,
+	windowWidthLess900: boolean
+}> = ({ warningMessage, warningColor, windowWidthLess900 }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	return (

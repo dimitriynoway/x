@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Route, Redirect } from 'react-router-dom';
-import axios from 'axios';
+import { Route, Redirect, useHistory } from 'react-router-dom';
 import Loader from '../components/Loader';
 
-export const LoginRoute = ({ children, ...rest }) => {
+const PrivateRoute: React.FC<{ path: string }> = ({ children, path, ...rest }) => {
 	const [loader, setLoader] = useState(true);
 	const [valid, setValid] = useState(false);
-
+	const history = useHistory();
 	useEffect(() => {
 		if (!localStorage.getItem('token')) {
 			setValid(false);
+			history.push('/');
 			setLoader(false);
 		} else {
+			console.log('we are gere');
 			setValid(true);
 			setLoader(false);
 		}
@@ -23,17 +24,21 @@ export const LoginRoute = ({ children, ...rest }) => {
 
 	return (
 		<Route
+			exect
+			path={path}
 			{...rest}
 			render={({ location }) => (valid ? (
+				children
+			) : (
 				<Redirect
 					to={{
-						pathname: '/chat',
+						pathname: '/login',
 						state: { from: location },
 					}}
 				/>
-			) : (
-				children
 			))}
 		/>
 	);
 };
+
+export default PrivateRoute;
