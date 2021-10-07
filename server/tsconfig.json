@@ -6,6 +6,7 @@
 		],
 		"module": "commonjs",
 		"rootDir": "./src",
+		"baseUrl": "src",
 		"allowJs": true,
 		"outDir": "./build",
 		"esModuleInterop": true,

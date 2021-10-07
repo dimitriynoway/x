@@ -1,5 +1,5 @@
-import IClientSocket from "./interfaces/SocketUser"
+import IClientSocket from './interfaces/SocketUser';
 
-const users: IClientSocket[] = []
+const users: IClientSocket[] = [];
 
-export default users
+export default users;
