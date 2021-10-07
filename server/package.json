@@ -6,7 +6,9 @@
 	"scripts": {
 		"build": "tsc",
 		"server": "tsc && nodemon --exec babel-node build/server.js",
-		"dev": "nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts"
+		"dev": "nodemon --watch './**/*.ts' --exec 'ts-node' src/server.ts",
+		"migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -n new",
+		"migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run"
 	},
 	"author": "",
 	"license": "ISC",

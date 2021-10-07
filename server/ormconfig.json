@@ -5,13 +5,13 @@
 	"username": "root",
 	"password": "QWErty21!",
 	"database": "typeorm_test",
-	"synchronize": true,
-	"logging": false,
+	"synchronize": false,
+	"logging": true,
 	"entities": [
 		"src/entity/**/*.ts"
 	],
 	"migrations": [
-		"src/migration/**/*.ts"
+		"src/migration/*.ts"
 	],
 	"subscribers": [
 		"src/subscriber/**/*.ts"
